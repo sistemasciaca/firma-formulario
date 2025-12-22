@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario con Firma</title>
+</head>
+<body>
+
+<h3>Formulario con firma</h3>
+
+<form id="formulario">
+  <label>Nombre:</label><br>
+  <input type="text" name="nombre" required><br><br>
+
+  <label>Firma:</label><br>
+  <canvas id="firma" width="300" height="150"
+          style="border:1px solid #000;"></canvas><br>
+  <button type="button" onclick="limpiar()">Limpiar firma</button><br><br>
+
+  <button type="submit">Enviar</button>
+</form>
+
+<script>
+const canvas = document.getElementById("firma");
+const ctx = canvas.getContext("2d");
+let dibujando = false;
+
+// mouse
+canvas.addEventListener("mousedown", () => dibujando = true);
+canvas.addEventListener("mouseup", () => {
+  dibujando = false;
+  ctx.beginPath();
+});
+canvas.addEventListener("mousemove", dibujar);
+
+// táctil
+canvas.addEventListener("touchstart", () => dibujando = true);
+canvas.addEventListener("touchend", () => {
+  dibujando = false;
+  ctx.beginPath();
+});
+canvas.addEventListener("touchmove", dibujarTouch);
+
+function dibujar(e) {
+  if (!dibujando) return;
+  ctx.lineWidth = 2;
+  ctx.lineCap = "round";
+  ctx.lineTo(e.offsetX, e.offsetY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(e.offsetX, e.offsetY);
+}
+
+function dibujarTouch(e) {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  const x = e.touches[0].clientX - r.left;
+  const y = e.touches[0].clientY - r.top;
+  if (!dibujando) return;
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+
+function limpiar() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// envío
+document.getElementById("formulario").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const datos = new FormData();
+  datos.append("nombre", e.target.nombre.value);
+  datos.append("firma", canvas.toDataURL("image/png"));
+
+  fetch("https://script.google.com/macros/s/AKfycbw_ekbCzp2UXN2xCmx6eJdY4wxf4DHthd8CYjwNxzYtlJ6Ewbq7ibQfbcEUdueuN7yRgA/exec", {
+    method: "POST",
+    body: datos
+  })
+  .then(() => {
+    alert("Formulario enviado correctamente ✔");
+    e.target.reset();
+    limpiar();
+  })
+  .catch(() => alert("Error al enviar"));
+});
+</script>
+
+</body>
+</html>
