@@ -11,7 +11,7 @@
 <form id="formulario">
   <label>Nombre:</label><br>
   <input type="text" name="nombre" required><br><br>
-
+  <input type="hidden" name="ts" id="ts">
   <label>Firma:</label><br>
   <canvas id="firma" width="300" height="150"
           style="border:1px solid #000;"></canvas><br>
@@ -21,6 +21,12 @@
 </form>
 
 <script>
+
+
+
+  const params = new URLSearchParams(window.location.search);
+  document.getElementById("ts").value = params.get("ts");
+
 const canvas = document.getElementById("firma");
 const ctx = canvas.getContext("2d");
 let dibujando = false;
@@ -89,4 +95,5 @@ document.getElementById("formulario").addEventListener("submit", e => {
 </script>
 
 </body>
+
 </html>
