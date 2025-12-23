@@ -78,8 +78,9 @@ document.getElementById("formulario").addEventListener("submit", e => {
   e.preventDefault();
 
   const datos = new FormData();
-  datos.append("nombre", e.target.nombre.value);
-  datos.append("firma", canvas.toDataURL("image/png"));
+datos.append("nombre", e.target.nombre.value);
+datos.append("ts", document.getElementById("ts").value); // 👈 FALTABA
+datos.append("firma", canvas.toDataURL("image/png"));
 
   fetch("https://script.google.com/macros/s/AKfycbw_ekbCzp2UXN2xCmx6eJdY4wxf4DHthd8CYjwNxzYtlJ6Ewbq7ibQfbcEUdueuN7yRgA/exec", {
     method: "POST",
@@ -97,3 +98,4 @@ document.getElementById("formulario").addEventListener("submit", e => {
 </body>
 
 </html>
+
